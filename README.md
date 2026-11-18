@@ -9,6 +9,7 @@ Open-source ⌘X / ⌘V for Finder: cut and paste (move) files like on Windows.
 
 ## Build & run
 ```bash
+git clone https://github.com/RiccardoAlb/FinderCut.git && cd FinderCut
 ./build.sh
 open build/FinderCut.app
 ```
