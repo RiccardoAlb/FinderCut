@@ -42,6 +42,10 @@ open build/FinderCut.app
 Grant **Accessibility** permission when prompted (System Settings → Privacy & Security → Accessibility).
 With ad-hoc signing macOS may ask you to grant it again after each rebuild.
 
+**Tip — keep the permission across rebuilds:** if a code-signing identity named `FinderCut Dev` exists in your keychain, `build.sh` signs with it; otherwise it falls back to ad-hoc. A self-signed certificate (Keychain Access → Certificate Assistant → Create a Certificate… → type *Code Signing*) is enough.
+
+**Local debugging (optional):** if you create a git-ignored `Sources/FinderCut/LocalDiagnostics.swift`, it is compiled in automatically (see `Package.swift`) and can install the engine's `diagnostics` hook. It is never committed.
+
 If you moved a cross-volume item with "Hide cut files", macOS asks once for **Automation** permission (to read the destination folder from Finder).
 
 ### Tests
@@ -87,6 +91,10 @@ open build/FinderCut.app
 ```
 Concedi il permesso **Accessibilità** quando richiesto (Impostazioni di Sistema → Privacy e sicurezza → Accessibilità).
 Con la firma ad-hoc macOS può chiederti di riconcederlo a ogni ricompilazione.
+
+**Consiglio — mantenere il permesso tra le ricompilazioni:** se nel portachiavi esiste un'identità di firma chiamata `FinderCut Dev`, `build.sh` firma con quella; altrimenti usa la firma ad-hoc. Basta un certificato autofirmato (Accesso Portachiavi → Assistente Certificati → Crea un certificato… → tipo *Firma del codice*).
+
+**Debug locale (opzionale):** se crei un file `Sources/FinderCut/LocalDiagnostics.swift` (ignorato da git), viene compilato in automatico (vedi `Package.swift`) e può installare l'hook `diagnostics` del motore. Non viene mai committato.
 
 Se sposti elementi su un altro volume con "Nascondi i file tagliati", macOS chiede una volta il permesso **Automazione** (per leggere dal Finder la cartella di destinazione).
 

@@ -31,6 +31,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem.menu = menu
         menu.delegate = self
 
+        #if LOCAL_DIAGNOSTICS
+        installLocalDiagnostics(on: engine) // defined in the git-ignored LocalDiagnostics.swift
+        #endif
         engine.onPendingChange = { [weak self] _ in self?.refresh() }
         startEngine()
     }

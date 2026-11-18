@@ -22,6 +22,9 @@ final class CutEngine {
         }
     }
 
+    /// Optional hook for debugging; unused unless something installs it.
+    var diagnostics: ((String) -> Void)?
+
     private var tap: CFMachPort?
     private var state = CutState()
     private let hider = HideManager(storeURL: HideManager.defaultStoreURL)
@@ -48,7 +51,11 @@ final class CutEngine {
             tap: .cgSessionEventTap, place: .headInsertEventTap, options: .defaultTap,
             eventsOfInterest: CGEventMask(mask), callback: callback,
             userInfo: Unmanaged.passUnretained(self).toOpaque()
-        ) else { return false }
+        ) else {
+            diagnostics?("event tap creation failed (trusted=\(AXIsProcessTrusted()))")
+            return false
+        }
+        diagnostics?("event tap started (trusted=\(AXIsProcessTrusted()))")
         self.tap = tap
         let src = CFMachPortCreateRunLoopSource(nil, tap, 0)
         CFRunLoopAddSource(CFRunLoopGetMain(), src, .commonModes)
@@ -84,12 +91,17 @@ final class CutEngine {
             return swallowedKeyCodes.remove(code) != nil ? nil : pass
         }
 
+        let front = NSWorkspace.shared.frontmostApplication?.bundleIdentifier
+        let textFocused = isTextEditingFocused()
         let action = state.action(
             keyCode: code,
             flags: event.flags,
-            frontmostBundleID: NSWorkspace.shared.frontmostApplication?.bundleIdentifier,
-            textEditingFocused: isTextEditingFocused(),
+            frontmostBundleID: front,
+            textEditingFocused: textFocused,
             pasteboardChangeCount: NSPasteboard.general.changeCount)
+        if event.flags.contains(.maskCommand), code == KeyCode.x || code == KeyCode.v {
+            diagnostics?("cmd key=\(code) flags=\(event.flags.rawValue) front=\(front ?? "nil") text=\(textFocused) -> \(action)")
+        }
 
         switch action {
         case .passThrough:

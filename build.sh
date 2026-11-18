@@ -23,5 +23,13 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 <key>NSAppleEventsUsageDescription</key><string>FinderCut needs to ask Finder which folder you pasted into, to show moved files again.</string>
 </dict></plist>
 PLIST
-codesign --force --sign - "$APP"
+# iCloud/Finder may add extended attributes that make codesign fail.
+xattr -cr "$APP"
+# Sign with a stable local identity if one named "FinderCut Dev" exists in the keychain:
+# the Accessibility permission then survives rebuilds. Otherwise fall back to ad-hoc.
+if security find-identity -p codesigning | grep -q '"FinderCut Dev"'; then
+    codesign --force --sign "FinderCut Dev" "$APP"
+else
+    codesign --force --sign - "$APP"
+fi
 echo "Built $APP"
