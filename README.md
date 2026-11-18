@@ -1,2 +1,2 @@
-# CmdX
+# FinderCut
 
